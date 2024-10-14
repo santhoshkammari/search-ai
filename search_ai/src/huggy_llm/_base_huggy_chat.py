@@ -63,7 +63,7 @@ class HuggyLLM():
                                   switch_to=True)
         res = self.llm.chat(user_prompt,**kwargs)
         res.wait_until_done()
-        return res
+        return res.text
 
     def stream(self,messages: List|str, model_name:_AVAILABLE_MODELS=None,**kwargs):
         sys_prompt,user_prompt = self._get_sys_and_user_prompt(messages)
