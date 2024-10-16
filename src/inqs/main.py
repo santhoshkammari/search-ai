@@ -1,7 +1,9 @@
 import re
 from datetime import datetime
-from src.inqs import HuggyLLM,Agent
-from src.inqs.prompts.query_refiner import QUERY_REFINER_PROMPT
+
+from .huggy_llm import HuggyLLM
+from .agents.base_agent import Agent
+from .prompts.query_refiner import QUERY_REFINER_PROMPT
 from pyopengenai.query_master import SearchRetriever
 
 llm = HuggyLLM()
