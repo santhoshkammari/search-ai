@@ -6,7 +6,7 @@ from .agents.base_agent import Agent
 from .prompts.query_refiner import QUERY_REFINER_PROMPT
 from pyopengenai.query_master import SearchRetriever
 
-llm = HuggyLLM()
+llm = HuggyLLM(hf_email='backupsanthosh1@gmail.com',hf_password='SK99@pass')
 query_refiner = Agent('query_refiner',llm,QUERY_REFINER_PROMPT+f"TODAY DATE: {datetime.now().strftime('%Y-%m-%d')}")
 search_query_generator = Agent('search_query_generator',llm,
                                """You are a SearchQueryGenerator ,Generate a Google search query  based on the user's query,
