@@ -1,8 +1,7 @@
 import re
 from datetime import datetime
-
-from search_ai import HuggyLLM,Agent
-from search_ai.src.prompts.query_refiner import QUERY_REFINER_PROMPT
+from src.inqs import HuggyLLM,Agent
+from src.inqs.prompts.query_refiner import QUERY_REFINER_PROMPT
 from pyopengenai.query_master import SearchRetriever
 
 llm = HuggyLLM()
@@ -38,35 +37,37 @@ final_answer_generator= Agent("final_answer_generator",llm,description="""
 
 web_search = SearchRetriever(extract_pdf=False)
 
-max_turns = 5
-turn = 0
-memory = ""
 
-while(turn<max_turns):
-    turn+=1
+def search_ai(user_query,silent = True):
+    max_turns = 5
+    turn = 0
+    memory = ""
 
-    if turn==1:
-        user_query = "python code of openai new package swarm" # + ", if they have github code tthat will be great"
-        goal = query_refiner.act(user_query,silent=False)
+    while(turn<max_turns):
+        turn+=1
 
-    search_int=3
-    search_results=""
-    while(search_int and search_results==""):
-        search_int-=1
-        search_query = search_query_generator.act(goal,memory=memory,silent=False)
-        search_results = "\n".join(web_search.query_based_content_retrieval(goal,topk=15).topk_chunks)
-        print(f"## SEARCH RESULTS:\n\n{search_results}\n")
+        if turn==1:
+            goal = query_refiner.act(user_query,silent=silent)
+
+        search_int=3
+        search_results=""
+        while(search_int and search_results==""):
+            search_int-=1
+            search_query = search_query_generator.act(goal,memory=memory,silent=silent)
+            search_results = "\n".join(web_search.query_based_content_retrieval(goal,topk=15).topk_chunks)
+            if not silent:
+                print(f"## SEARCH RESULTS:\n\n{search_results}\n")
 
 
-    result = compressor.act(search_results,goal=goal,silent=False)
-    answer_score = answer_scorer.act(result, goal=goal, silent=False)
-    score_regex = re.findall(r'\d+',answer_score)
-    score = int(score_regex[-1]) if score_regex else -1
-    if score>5:
-        memory+=f'SEARCH_QUERY:\n{search_query}\nRESULT:{result}\nGOAL_SCORE:{score}/10\n'
-    if memory and score==-1 or score==10 or turn==max_turns :
-        final_answer_generator.act(memory,silent=False)
-        break
+        result = compressor.act(search_results,goal=goal,silent=silent)
+        answer_score = answer_scorer.act(result, goal=goal, silent=silent)
+        score_regex = re.findall(r'\d+',answer_score)
+        score = int(score_regex[-1]) if score_regex else -1
+        if score>5:
+            memory+=f'SEARCH_QUERY:\n{search_query}\nRESULT:{result}\nGOAL_SCORE:{score}/10\n'
+        if memory and score==-1 or score==10 or turn==max_turns :
+            return final_answer_generator.act(memory,silent=silent)
+            break
 
 
 

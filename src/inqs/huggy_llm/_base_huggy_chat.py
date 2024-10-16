@@ -1,7 +1,7 @@
 from typing import List, Dict, Literal
 from hugchat.hugchat import ChatBot
 
-from search_ai.src.huggy_llm._base_login import HFCredentialManager
+from ._base_login import HFCredentialManager
 
 _AVAILABLE_MODELS = Literal['meta-llama/Meta-Llama-3.1-70B-Instruct',
               'CohereForAI/c4ai-command-r-plus-08-2024',
